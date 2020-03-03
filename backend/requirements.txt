@@ -1,0 +1,5 @@
+py-cpuinfo
+gpustat
+psutil
+bottle
+gunicorn

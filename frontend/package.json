@@ -1,0 +1,27 @@
+{
+  "name": "servstat-frontend",
+  "version": "0.0.1",
+  "description": "servstat frontend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.pug"
+  },
+  "author": "djosix",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^3.1.1",
+    "axios": "^0.19.2",
+    "jquery": "^3.4.1",
+    "less": "^3.11.1",
+    "navigator": "^1.0.1",
+    "parcel": "^1.12.4",
+    "pug": "^2.0.4",
+    "semantic-ui-css": "^2.4.1",
+    "typescript": "^3.8.3",
+    "vue": "^2.6.11",
+    "vue-hot-reload-api": "^2.3.4",
+    "vue-template-compiler": "^2.6.11",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
