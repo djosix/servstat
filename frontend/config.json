@@ -1,6 +1,6 @@
 {
     "interval": 5000,
-    "urls": [
-        "http://127.0.0.1:9988/stat"
+    "links": [
+        "http://127.0.0.1:9989/stat"
     ]
 }

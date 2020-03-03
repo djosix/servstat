@@ -3,6 +3,7 @@ import jQuery from 'jquery';
 // @ts-ignore
 window.jQuery = window.$ = jQuery;
 import 'semantic-ui-css/semantic';
+// import 'semantic-ui-css/components/popup';
 
 
 import Vue from 'vue';
