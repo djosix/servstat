@@ -1,62 +1,65 @@
 <template lang="pug">
-    .ui.very.padded.basic.segment
-      h1.ui.header ServStat
-      table.ui.celled.unstackable.table
-        thead
-          tr
-            th Host
-            th CPU / Mem. / Swap
-            th GPUs
-        tbody
-          tr(v-for='stat in stats')
-            td
-              div(v-if='stat.data')
-                h3 {{ stat.data.host }}
-                br
-                span {{ stat.addr }}
-              div(v-else)
-                i {{ stat.addr }}
-            td
-              div(v-if='stat.data')
-                .ui.small.reversed.progress(:data-percent='stat.data.cpu.usage')
-                  .bar: .progress
-                  .label {{ stat.data.cpu.info.brand }} ({{ stat.data.cpu.count }} Cores)
-                div
-                  span(v-for='percent, i in stat.data.cpu.percent')
-                    .ui.basic.very.small.red.label(v-if='percent > 70') {{ percent }}% 
-                    .ui.basic.very.small.orange.label(v-else-if='percent > 40') {{ percent }}% 
-                    .ui.basic.very.small.yellow.label(v-else-if='percent > 20') {{ percent }}% 
-                    .ui.basic.very.small.green.label(v-else) {{ percent }}% 
-                hr.light
-                .ui.small.reversed.progress(:data-value='stat.data.mem.used' :data-total='stat.data.mem.total')
-                  .bar: .progress
-                  .label Memory Usage ({{ stat.data.mem.used | size }} / {{ stat.data.mem.total | size }}) 
-                .ui.small.reversed.progress(:data-value='stat.data.swap.used' :data-total='stat.data.swap.total')
-                  .bar: .progress
-                  .label Swap Usage ({{ stat.data.swap.used | size }} / {{ stat.data.swap.total | size }}) 
+  .ui.very.padded.basic.segment
+    h1.ui.header ServStat
+    table.ui.celled.unstackable.table
+      thead
+        tr
+          th.two.wide Host
+          th.six.wide CPU / Mem. / Swap
+          th.eight.wide GPUs
+      tbody
+        tr(v-for='stat in stats')
+          td
+            div(v-if='stat.data')
+              h3 {{ stat.data.host }}
+              br
+              span {{ stat.addr }}
+            div(v-else)
+              i {{ stat.addr }}
+          td
+            div(v-if='stat.data')
+              .ui.small.reversed.progress(:data-percent='stat.data.cpu.usage')
+                .bar: .progress
+                .label {{ stat.data.cpu.info.brand }} ({{ stat.data.cpu.count }} Cores)
+              div
+                span(v-for='percent, i in stat.data.cpu.percent')
+                  .ui.basic.mini.red.label(v-if='percent > 70') {{ percent }}%
+                  .ui.basic.mini.orange.label(v-else-if='percent > 40') {{ percent }}%
+                  .ui.basic.mini.yellow.label(v-else-if='percent > 20') {{ percent }}%
+                  .ui.basic.mini.green.label(v-else) {{ percent }}%
+                  | &hairsp;
+              hr.light
+              .ui.small.reversed.progress(:data-value='stat.data.mem.used' :data-total='stat.data.mem.total')
+                .bar: .progress
+                .label Memory Usage ({{ stat.data.mem.used | size }} / {{ stat.data.mem.total | size }}) 
+              .ui.small.reversed.progress(:data-value='stat.data.swap.used' :data-total='stat.data.swap.total')
+                .bar: .progress
+                .label Swap Usage ({{ stat.data.swap.used | size }} / {{ stat.data.swap.total | size }}) 
 
-              div(v-else)
-                i Loading...
-            td
-              div(v-if='stat.data')
-                .ui.cards
-                  .card(v-for='gpu in stat.data.gpu')
-                    .content
-                      .header [{{ gpu.index }}] {{ gpu.name }}
-                      .meta
-                        ul
-                          li(v-for='p in gpu.processes')
-                            | {{ p.username }} ({{ p.command }}:{{ p.pid }}, {{ p.gpu_memory_usage }}M)
-                      .description
-                        .ui.tiny.reversed.progress(:data-percent='gpu["utilization.gpu"]')
-                          .bar: .progress
-                          .label Util. {{ gpu['utilization.gpu'] }}% ({{ gpu['temperature.gpu'] }}°C, fan: {{ gpu['fan.speed'] }})
-                        .ui.tiny.reversed.progress(:data-value='gpu["memory.used"]' :data-total='gpu["memory.total"]')
-                          .bar: .progress
-                          .label Mem. ({{ gpu['memory.used'] }}M / {{ gpu['memory.total'] }}M) 
-                      .extra.content
-              div(v-else)
-                i Loading...
+            div(v-else)
+              i Loading...
+          td
+            div(v-if='stat.data')
+              .ui.cards
+                .card(v-for='gpu in stat.data.gpu')
+                  .content
+                    .header [{{ gpu.index }}] {{ gpu.name }}
+                    br
+                    .description
+                      .ui.small.reversed.progress(:data-percent='gpu["utilization.gpu"]')
+                        .bar: .progress
+                        .label Util. {{ gpu['utilization.gpu'] }}% ({{ gpu['temperature.gpu'] }}&deg;C, fan: {{ gpu['fan.speed'] }})
+                      .ui.small.reversed.progress(:data-value='gpu["memory.used"]' :data-total='gpu["memory.total"]')
+                        .bar: .progress
+                        .label Mem. {{ (gpu['memory.used'] / gpu['memory.total']) * 100 | round }}% ({{ gpu['memory.used'] }}M / {{ gpu['memory.total'] }}M) 
+                  .extra.content
+                    pre(v-if='gpu.processes.length > 0' style="font-size: 0.9em; margin: 0px ")
+                      span(v-for='p, i in gpu.processes')
+                        br(v-if='i > 0')
+                        | <b>{{ p.username }}</b> (<b>{{ p.command }}</b>:{{ p.pid }}, <b>{{ p.gpu_memory_usage }}M</b>)
+                    
+            div(v-else)
+              i Loading...
 </template>
 
 
@@ -124,6 +127,9 @@ export default {
   filters: {
     size(n) {
       return formatSize(n);
+    },
+    round(n) {
+      return Math.round(n);
     }
   }
 };
