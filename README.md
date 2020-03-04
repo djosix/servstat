@@ -11,6 +11,12 @@ python3 -m pip install -r requirements.txt
 python3 main.py # default host=0.0.0.0 port=9989
 ```
 
+Add service to supervisor
+
+```shell
+ln -sf `realpath servstat.conf` /etc/supervisor/conf.d/servstat.conf
+```
+
 ## Building frontend
 
 ```shell

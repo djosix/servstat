@@ -42,7 +42,11 @@ def gpu_info():
     return gpu_info_data
 
 
-@bottle.get('/stat')
+
+
+app = bottle.Bottle()
+
+@app.get('/stat')
 def stat():
     bottle.response.set_header('Access-Control-Allow-Origin', '*')
     return {'host': os.uname()[1],
@@ -53,4 +57,16 @@ def stat():
             'gpu': gpu_info()}
 
 
-bottle.run(server='gunicorn', host='0.0.0.0', port=9989)
+
+if __name__ == '__main__':
+    import argparse, sys
+    
+    parser = argparse.ArgumentParser(sys.argv[0])
+    parser.add_argument('--server', default='gunicorn')
+    parser.add_argument('--host', default='0.0.0.0')
+    parser.add_argument('--port', default=9989)
+    parser.add_argument('--workers', default=1)
+    args = parser.parse_args()
+    
+    sys.argv = [sys.argv[0]]
+    app.run(server=args.server, host=args.host, port=args.port, workers=args.workers)
