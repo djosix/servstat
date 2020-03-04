@@ -8,7 +8,7 @@
           th.six.wide CPU / Mem. / Swap
           th.eight.wide GPUs
       tbody
-        tr(v-for='stat in stats')
+        tr(v-for='stat, hostIndex in stats')
           td
             div(v-if='stat.data')
               h3 {{ stat.data.host }}
@@ -17,7 +17,7 @@
               i {{ stat.addr }}
           td
             div(v-if='stat.data')
-              .ui.small.reversed.progress(:data-percent='stat.data.cpu.usage')
+              .ui.small.reversed.progress(:x-percent='stat.data.cpu.usage')
                 .bar: .progress
                 .label {{ stat.data.cpu.info.brand }} ({{ stat.data.cpu.count }} Cores)
               div
@@ -28,10 +28,10 @@
                   .ui.basic.mini.green.label(v-else) {{ percent }}%
                   | &hairsp;
               hr.light
-              .ui.small.reversed.progress(:data-value='stat.data.mem.used' :data-total='stat.data.mem.total')
+              .ui.small.reversed.progress(:x-percent='100 * stat.data.mem.used / stat.data.mem.total')
                 .bar: .progress
                 .label Memory Usage ({{ stat.data.mem.used | size }} / {{ stat.data.mem.total | size }}) 
-              .ui.small.reversed.progress(:data-value='stat.data.swap.used' :data-total='stat.data.swap.total')
+              .ui.small.reversed.progress(:x-percent='100 * stat.data.swap.used / stat.data.swap.total')
                 .bar: .progress
                 .label Swap Usage ({{ stat.data.swap.used | size }} / {{ stat.data.swap.total | size }}) 
 
@@ -45,10 +45,10 @@
                     .header [{{ gpu.index }}] {{ gpu.name }}
                     br
                     .description
-                      .ui.small.reversed.progress(:data-percent='gpu["utilization.gpu"]')
+                      .ui.small.reversed.progress(:x-percent='gpu["utilization.gpu"]')
                         .bar: .progress
                         .label Util. {{ gpu['utilization.gpu'] }}% ({{ gpu['temperature.gpu'] }}&deg;C, fan: {{ gpu['fan.speed'] }})
-                      .ui.small.reversed.progress(:data-value='gpu["memory.used"]' :data-total='gpu["memory.total"]')
+                      .ui.small.reversed.progress(:x-percent='100 * gpu["memory.used"] / gpu["memory.total"]')
                         .bar: .progress
                         .label Mem. {{ (gpu['memory.used'] / gpu['memory.total']) * 100 | round }}% ({{ gpu['memory.used'] }}M / {{ gpu['memory.total'] }}M) 
                   .extra.content
@@ -63,42 +63,55 @@
 
 
 <script>
-import axios from 'axios';
-import $ from 'jquery';
+import axios from "axios";
+import $ from "jquery";
+import _ from "lodash";
 
-
-function round(n, f=2) {
-  let x = (10 ** f);
+let round = (n, f = 2) => {
+  let x = 10 ** f;
   return Math.round(n * x) / x;
-}
+};
 
-function formatSize(n) {
-  const units = ['', 'K', 'M', 'G', 'T'];
+let formatSize = n => {
+  const units = ["", "K", "M", "G", "T"];
   let p = 1024;
   for (let unit of units) {
     if (n < p) return `${round(n)}${unit}`;
     n /= p;
   }
   return `${round(n)}P`;
-}
+};
 
+let updateProgress = _.debounce(() => {
+  // console.log(123);
+  document.querySelectorAll('.ui.progress').forEach(el => {
+    let $el = $(el);
+    $el.progress({
+      autoSuccess: false,
+      percent: $el.attr('x-percent')
+    });
+  });
+}, 256);
 
 export default {
   created() {
-    axios.get('config.json').then(res => {
-      for (let [i, link] of res.data.links.entries()) {
-        let addr;
-        try {
-          addr = /https?:\/\/([a-zA-Z0-9\.]+)(:[0-9]+)?(\/.*)?/.exec(link)[1];
-        } catch (e) {
-          addr = '(unknown address)';
+    axios
+      .get("config.json")
+      .then(res => {
+        for (let [i, link] of res.data.links.entries()) {
+          let addr;
+          try {
+            addr = /https?:\/\/([a-zA-Z0-9\.]+)(:[0-9]+)?(\/.*)?/.exec(link)[1];
+          } catch (e) {
+            addr = "(unknown address)";
+          }
+          this.stats.push({ addr });
+          this.update(i, link, res.data.interval || 5000);
         }
-        this.stats.push({ addr });
-        this.update(i, link, res.data.interval || 5000);
-      }
-    }).catch(err => {
-      alert('Failed to load config.json');
-    });
+      })
+      .catch(err => {
+        alert("Failed to load config.json");
+      });
   },
   data() {
     return {
@@ -107,20 +120,17 @@ export default {
   },
   methods: {
     update(index, link, interval) {
-      axios.get(link).then(res => {
-        this.$set(this.stats[index], 'data', res.data);
-      }).finally(() => {
-        setTimeout(() => {
-          this.update(index, link, interval);
-        }, interval);
-      });
-    },
-  },
-  watch: {
-    stats() {
-      this.$nextTick(() => {
-        $('.ui.progress').progress();
-      });
+      axios
+        .get(link)
+        .then(res => {
+          this.$set(this.stats[index], "data", res.data);
+          this.$nextTick(updateProgress);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.update(index, link, interval);
+          }, interval);
+        });
     }
   },
   filters: {
@@ -138,7 +148,7 @@ export default {
 
 <style lang="less" scoped>
 hr.light {
-  border-top: 1px solid rgba(34,36,38,.1);
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
   border-bottom: 0px;
   border-left: 0px;
   border-right: 0px;
@@ -146,30 +156,30 @@ hr.light {
 
 .ui.reversed.progress[data-percent^="1"] .bar,
 .ui.reversed.progress[data-percent^="2"] .bar {
-  background-color: #66DA81;
+  background-color: #66da81;
 }
 
 .ui.reversed.progress[data-percent^="3"] .bar {
-  background-color: #B4D95C;
+  background-color: #b4d95c;
 }
 
 .ui.reversed.progress[data-percent^="4"] .bar,
 .ui.reversed.progress[data-percent^="5"] .bar {
-  background-color: #DDC928;
+  background-color: #ddc928;
 }
 
 .ui.reversed.progress[data-percent^="6"] .bar {
-  background-color: #E6BB48;
+  background-color: #e6bb48;
 }
 
 .ui.reversed.progress[data-percent^="7"] .bar,
 .ui.reversed.progress[data-percent^="8"] .bar {
-  background-color: #EFBC72;
+  background-color: #efbc72;
 }
 
 .ui.reversed.progress[data-percent^="9"] .bar,
 .ui.reversed.progress[data-percent^="100"] .bar {
-  background-color: #D95C5C;
+  background-color: #d95c5c;
 }
 
 /* Indicating Label */
@@ -213,7 +223,7 @@ hr.light {
 .ui.reversed.progress[data-percent="7"] .bar,
 .ui.reversed.progress[data-percent="8"] .bar,
 .ui.reversed.progress[data-percent="9"] .bar {
-  background-color: #66DA81;
+  background-color: #66da81;
 }
 
 .ui.reversed.progress[data-percent="1"] .label,
@@ -233,5 +243,4 @@ hr.light {
 .ui.reversed.progress.success .label {
   color: rgb(83, 26, 26);
 }
-
 </style>
