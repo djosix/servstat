@@ -4,8 +4,8 @@
   "description": "servstat frontend",
   "main": "index.js",
   "scripts": {
-    "dev": "rm -rfv dist; mkdir -pv dist; cp -fv config.json dist/; npx parcel src/index.pug",
-    "build": "rm -rfv dist; mkdir -pv dist; cp -fv config.json dist/; npx parcel build --public-url . src/index.pug"
+    "dev": "rm -rfv dist; mkdir -pv dist; cp -fv config.json dist/; parcel src/index.pug",
+    "build": "rm -rfv dist; mkdir -pv dist; cp -fv config.json dist/; parcel build --public-url . src/index.pug"
   },
   "author": "djosix",
   "license": "MIT",
