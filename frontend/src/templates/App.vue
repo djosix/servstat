@@ -12,7 +12,6 @@
           td
             div(v-if='stat.data')
               h3 {{ stat.data.host }}
-              br
               span {{ stat.addr }}
             div(v-else)
               i {{ stat.addr }}
@@ -23,9 +22,9 @@
                 .label {{ stat.data.cpu.info.brand }} ({{ stat.data.cpu.count }} Cores)
               div
                 span(v-for='percent, i in stat.data.cpu.percent')
-                  .ui.basic.mini.red.label(v-if='percent > 70') {{ percent }}%
-                  .ui.basic.mini.orange.label(v-else-if='percent > 40') {{ percent }}%
-                  .ui.basic.mini.yellow.label(v-else-if='percent > 20') {{ percent }}%
+                  .ui.basic.mini.red.label(v-if='percent >= 70') {{ percent }}%
+                  .ui.basic.mini.orange.label(v-else-if='percent >= 40') {{ percent }}%
+                  .ui.basic.mini.yellow.label(v-else-if='percent >= 20') {{ percent }}%
                   .ui.basic.mini.green.label(v-else) {{ percent }}%
                   | &hairsp;
               hr.light
