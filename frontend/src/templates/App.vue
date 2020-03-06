@@ -14,6 +14,7 @@
               h3 {{ stat.data.host }}
               span {{ stat.addr }}
             div(v-else)
+              i.notched.circle.loading.icon
               i {{ stat.addr }}
           td
             div(v-if='stat.data')
@@ -36,6 +37,7 @@
                 .label Swap Usage ({{ stat.data.swap.used | size }} / {{ stat.data.swap.total | size }}) 
 
             div(v-else)
+              i.notched.circle.loading.icon
               i Loading...
           td
             div(v-if='stat.data')
@@ -58,6 +60,7 @@
                         | <b>{{ p.username }}</b> (<b>{{ p.command }}</b>:{{ p.pid }}, <b>{{ p.gpu_memory_usage }}M</b>)
                     
             div(v-else)
+              i.notched.circle.loading.icon
               i Loading...
 </template>
 
