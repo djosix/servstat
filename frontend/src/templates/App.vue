@@ -12,10 +12,11 @@
           td
             div(v-if='stat.data')
               h3 {{ stat.data.host }}
-              span {{ stat.addr }}
+              span {{ stat.addr }} &nbsp;
+              a(:data-tooltip='"[API] " + stat.link' :href='stat.link')
+                i.ui.external.alternate.icon
             div(v-else)
-              i.notched.circle.loading.icon
-              i {{ stat.addr }}
+              i {{ stat.link }}
           td
             div(v-if='stat.data')
               .ui.small.reversed.progress(:x-percent='stat.data.cpu.usage')
@@ -37,7 +38,7 @@
                 .label Swap Usage ({{ stat.data.swap.used | size }} / {{ stat.data.swap.total | size }}) 
 
             div(v-else)
-              i.notched.circle.loading.icon
+              i.spinner.loading.icon
               i Loading...
           td
             div(v-if='stat.data')
@@ -60,7 +61,7 @@
                         | <b>{{ p.username }}</b> (<b>{{ p.command }}</b>:{{ p.pid }}, <b>{{ p.gpu_memory_usage }}M</b>)
                     
             div(v-else)
-              i.notched.circle.loading.icon
+              i.spinner.loading.icon
               i Loading...
 </template>
 
@@ -76,22 +77,21 @@ let round = (n, f = 2) => {
 };
 
 let formatSize = n => {
-  const units = ["", "K", "M", "G", "T"];
-  let p = 1024;
+  const units = ["", "K", "M", "G", "T", "P", "E", "Z"];
+  let p = 2 ** 10;
   for (let unit of units) {
     if (n < p) return `${round(n)}${unit}`;
     n /= p;
   }
-  return `${round(n)}P`;
+  return `${n}Y`;
 };
 
 let updateProgress = _.debounce(() => {
-  // console.log(123);
-  document.querySelectorAll('.ui.progress').forEach(el => {
+  document.querySelectorAll(".ui.progress").forEach(el => {
     let $el = $(el);
     $el.progress({
       autoSuccess: false,
-      percent: $el.attr('x-percent')
+      percent: $el.attr("x-percent")
     });
   });
 }, 256);
@@ -104,11 +104,12 @@ export default {
         for (let [i, link] of res.data.links.entries()) {
           let addr;
           try {
-            addr = /https?:\/\/([a-zA-Z0-9\.]+)(:[0-9]+)?(\/.*)?/.exec(link)[1];
+            const regex = /https?:\/\/(?<host>[a-zA-Z0-9\.]+)(?::(?<port>[0-9]+))?(?<path>\/.*)?/;
+            addr = regex.exec(link).groups.host;
           } catch (e) {
             addr = "(unknown address)";
           }
-          this.stats.push({ addr });
+          this.stats.push({ addr, link });
           this.update(i, link, res.data.interval || 5000);
         }
       })
