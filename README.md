@@ -1,30 +1,35 @@
 # ServStat
 
-Monitoring CPU, memory, and GPU usage of a lot of servers.
+Monitoring CPU, memory, and GPU usage of multiple servers.
+
+![Demo Image](https://user-images.githubusercontent.com/17045050/76153224-2c58c500-6104-11ea-8ca1-dd9f2c1b2e37.png)
 
 ## Running backend
 
-Use root as example
+Use root as example:
 
 ```shell
 cd /root
 git clone https://github.com/djosix/servstat.git .servstat
 cd .servstat/backend
+
 python3 -m pip install -r requirements.txt
 ```
 
-Run server
+Simply run the API server:
 
 ```shell
-python3 main.py --host=0.0.0.0 --port=9989 --server=gunicorn --workers=1
+python3 main.py --host=0.0.0.0 --port=9989
 ```
 
-Add service to supervisor
+Or manage this service with supervisor, so that it will always start after rebooting:
 
 ```shell
-# install supervisor
+# Install supervisor
+apt install supervisor # using your package manager
+
 cp servstat.conf /etc/supervisor/conf.d/servstat.conf
-vim /etc/supervisor/conf.d/servstat.conf # customize
+vim /etc/supervisor/conf.d/servstat.conf # customize your service
 
 systemctl reload supervisor
 supervisorctl start servstat
@@ -35,6 +40,7 @@ supervisorctl start servstat
 ```shell
 git clone https://github.com/djosix/servstat.git /tmp/servstat
 cd /tmp/servstat/frontend
+
 npm install
 npm run build
 ```
@@ -50,4 +56,9 @@ Edit `dist/config.json`
 }
 ```
 
-Serve the `dist/` folder using a web server.
+Serve the `dist/` folder using a web server, for example:
+
+```shell
+# Copy files to document root of your web server
+cp -r dist/* /var/www/html/
+```
