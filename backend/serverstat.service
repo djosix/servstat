@@ -1,0 +1,10 @@
+[Unit]
+Description=ServerStat
+After=syslog.target network.target
+[Service]
+User=root
+WorkingDirectory=/root/.servstat/backend
+Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
+ExecStart=/usr/bin/python3 main.py --host=0.0.0.0 --port=9989
+[Install]
+WantedBy=multi-user.target
