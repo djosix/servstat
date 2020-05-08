@@ -59,6 +59,12 @@ def stat():
 class RequestHandlerWithCROS(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
         super(RequestHandlerWithCROS, self).__init__(*args, **kwargs)
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Methods", "*")
+        self.set_header("Access-Control-Allow-Headers", "*")
+    async def options(self, *args, **kwargs):
+        self.write("OK")
 class statHandler(RequestHandlerWithCROS):
     async def get(self, *args, **kwargs):
         self.write(json.dumps(stat(), indent=2, ensure_ascii=False))
