@@ -1,5 +1,5 @@
 py-cpuinfo
 gpustat
 psutil
-bottle
+tornado
 gunicorn

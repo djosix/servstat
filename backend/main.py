@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
-import bottle
+import tornado.web
+import tornado.ioloop
+import tornado.httpclient
+from tornado.httpclient import HTTPClientError
+import tornado.gen
+import json
 import cpuinfo
 import gpustat
 import psutil
@@ -44,29 +49,38 @@ def gpu_info():
 
 
 
-app = bottle.Bottle()
-
-@app.get('/stat')
 def stat():
-    bottle.response.set_header('Access-Control-Allow-Origin', '*')
     return {'host': os.uname()[1],
             'time': time.time(),
             'cpu': cpu_info(),
             'mem': dict(psutil.virtual_memory()._asdict()),
             'swap': dict(psutil.swap_memory()._asdict()),
             'gpu': gpu_info()}
-
+class RequestHandlerWithCROS(tornado.web.RequestHandler):
+    def __init__(self, *args, **kwargs):
+        super(RequestHandlerWithCROS, self).__init__(*args, **kwargs)
+class statHandler(RequestHandlerWithCROS):
+    async def get(self, *args, **kwargs):
+        self.write(json.dumps(stat(), indent=2, ensure_ascii=False))
 
 
 if __name__ == '__main__':
     import argparse, sys
     
     parser = argparse.ArgumentParser(sys.argv[0])
-    parser.add_argument('--server', default='gunicorn')
     parser.add_argument('--host', default='0.0.0.0')
     parser.add_argument('--port', default=9989)
-    parser.add_argument('--workers', default=1)
+    parser.add_argument('--ssl', default="false")
+    parser.add_argument('--cert', default="/etc/code-server-hub/cert/ssl.pem")
+    parser.add_argument('--key', default="/etc/code-server-hub/cert/ssl.key")
     args = parser.parse_args()
     
     sys.argv = [sys.argv[0]]
-    app.run(server=args.server, host=args.host, port=args.port, workers=args.workers)
+    app = tornado.web.Application(handlers=[
+        (r'/stat', statHandler)
+    ])
+    ssl_options={ "certfile": args.cert,  "keyfile": args.key } if args.ssl == "true" else None
+    server = tornado.httpserver.HTTPServer(app, ssl_options=ssl_options)
+    server.bind(args.port,args.host)
+    server.start(0)
+    tornado.ioloop.IOLoop.current().start()
