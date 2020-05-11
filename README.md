@@ -10,7 +10,7 @@ Use root as example:
 
 ```shell
 cd /root
-git clone https://github.com/djosix/servstat.git .servstat
+git clone https://github.com/HuJK/servstat.git .servstat
 cd .servstat/backend
 
 python3 -m pip install -r requirements.txt
