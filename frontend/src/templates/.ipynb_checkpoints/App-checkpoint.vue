@@ -1,6 +1,6 @@
 <template lang="pug">
   .ui.very.padded.basic.segment
-    h1.ui.header Training Servers
+    h1.ui.header Deep Learning Servers
     table.ui.celled.unstackable.table
       thead
         tr
