@@ -23,7 +23,7 @@
                 span &nbsp;
               div
                 span(v-for='percent, i in stat.data.cpu.percent')
-                  .ui.basic.mini.red.label(v-if='percent >= 99.95') {{ "100." }}%
+                  .ui.basic.mini.red.label(v-if='percent >= 99.9') {{ 99.9 }}%
                   .ui.basic.mini.red.label(v-else-if='percent >= 70') {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%
                   .ui.basic.mini.orange.label(v-else-if='percent >= 40') {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%
                   .ui.basic.mini.yellow.label(v-else-if='percent >= 20') {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%

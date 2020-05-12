@@ -10,7 +10,7 @@ Use root as example:
 
 ```shell
 cd /root
-git clone https://github.com/djosix/servstat.git .servstat
+git clone https://github.com/HuJK/servstat.git .servstat
 cd .servstat/backend
 
 python3 -m pip install -r requirements.txt
@@ -22,17 +22,20 @@ Simply run the API server:
 python3 main.py --host=0.0.0.0 --port=9989
 ```
 
-Or manage this service with supervisor, so that it will always start after rebooting:
+Or manage this service with systemd, so that it will always start after rebooting:
 
 ```shell
-# Install supervisor
-apt install supervisor # using your package manager
-
-cp servstat.conf /etc/supervisor/conf.d/servstat.conf
-vim /etc/supervisor/conf.d/servstat.conf # customize your service
-
-systemctl reload supervisor
-supervisorctl start servstat
+echo "[Unit]
+Description=ServerStat
+After=syslog.target network.target
+[Service]
+User=root
+WorkingDirectory=/root/.servstat/backend
+Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
+ExecStart=/usr/bin/python3 main.py --host=0.0.0.0 --port=9989
+[Install]
+WantedBy=multi-user.target" > /etc/systemd/system/serverstat.service
+systemctl enable --now serverstat
 ```
 
 ## Building frontend
