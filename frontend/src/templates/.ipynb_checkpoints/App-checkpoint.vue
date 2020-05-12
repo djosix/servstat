@@ -1,6 +1,6 @@
 <template lang="pug">
   .ui.very.padded.basic.segment
-    h1.ui.header Deep Learning Servers
+    h1.ui.header Training Servers
     table.ui.celled.unstackable.table
       thead
         tr
@@ -10,7 +10,7 @@
         tr(v-for='stat, hostIndex in stats')
           td
             div(v-if='stat.data')
-              h3 {{ stat.host }}
+              h2 {{ stat.host }}
               span &nbsp;
               span &nbsp;
               span &nbsp;
@@ -23,10 +23,11 @@
                 span &nbsp;
               div
                 span(v-for='percent, i in stat.data.cpu.percent')
-                  .ui.basic.mini.red.label(v-if='percent >= 70') {{ percent }}%
-                  .ui.basic.mini.orange.label(v-else-if='percent >= 40') {{ percent }}%
-                  .ui.basic.mini.yellow.label(v-else-if='percent >= 20') {{ percent }}%
-                  .ui.basic.mini.green.label(v-else) {{ percent }}%
+                  .ui.basic.mini.red.label(v-if='percent >= 99.9') {{ 99.9 }}%
+                  .ui.basic.mini.red.label(v-else-if='percent >= 70') {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%
+                  .ui.basic.mini.orange.label(v-else-if='percent >= 40') {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%
+                  .ui.basic.mini.yellow.label(v-else-if='percent >= 20') {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%
+                  .ui.basic.mini.green.label(v-else) {{ String(Number.parseFloat(percent).toFixed(1)).padStart(4, '0') }}%
                   | &hairsp;
               hr.light
               .ui.small.reversed.progress(:x-percent='100 * stat.data.mem.used / stat.data.mem.total')
@@ -34,7 +35,7 @@
                 .label Memory Usage ({{ stat.data.mem.used | size }} / {{ stat.data.mem.total | size }})
 
             div(v-else)
-              h3 {{ stat.host }}
+              h2 {{ stat.host }}
           td
             div(v-if='stat.data')
               .ui.cards
