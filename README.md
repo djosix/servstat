@@ -2,7 +2,7 @@
 
 Monitoring CPU, memory, and GPU usage of multiple servers.
 
-![Demo Image](https://user-images.githubusercontent.com/17045050/76153224-2c58c500-6104-11ea-8ca1-dd9f2c1b2e37.png)
+![Demo Image](https://user-images.githubusercontent.com/17045050/81972895-dfd6bc00-9655-11ea-9e1c-bda752e6b6bc.png)
 
 ## Running backend
 
@@ -49,9 +49,14 @@ Edit `dist/config.json`
 
 ```json
 {
+  "title": "Any Optional Title",
   "interval": 5000,
-  "links": [
-    "http://backend.server.ip:port/stat"
+  "servers": [
+    "http://backend.server.ip:port/stat",
+    {
+      "name": "Any Optional Server Name",
+      "link": "http://another.backend.server.ip:port/stat",
+    }
   ]
 }
 ```
