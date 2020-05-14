@@ -59,49 +59,20 @@
 
 
 <script>
-import axios from "axios";
-import $ from "jquery";
-import _ from "lodash";
-
 import UsageBar from './UsageBar';
 import CpuUsageBars from './CpuUsageBars';
 
-let round = (n, f = 2) => {
-  let x = 10 ** f;
-  return Math.round(n * x) / x;
-};
-
-let formatSize = n => {
-  const units = ["", "K", "M", "G", "T", "P", "E", "Z"];
-  let p = 2 ** 10;
-  for (let unit of units) {
-    if (n < p) return `${round(n)}${unit}`;
-    n /= p;
-  }
-  return `${n}Y`;
-};
-
-let updateProgress = _.debounce(() => {
-  document.querySelectorAll(".ui.progressX").forEach(el => {
-    let $el = $(el);
-    $el.progressX({
-      autoSuccess: false,
-      percent: $el.attr("x-percent")
-    });
-  });
-}, 256);
-
 export default {
   created() {
-    axios
-      .get("config.json")
-      .then(res => {
+    fetch("config.json")
+      .then(res => res.json())
+      .then(data => {  
         // Set title
-        if (typeof res.data.title === "string") {
-          this.title = document.title = res.data.title;
+        if (typeof data.title === "string") {
+          this.title = document.title = data.title;
         }
 
-        for (let [i, server] of res.data.servers.entries()) {
+        for (let [i, server] of data.servers.entries()) {
           let name, addr, link, interval;
 
           if (typeof server === "string") {
@@ -125,7 +96,7 @@ export default {
           }
 
           this.servers.push({ name, addr, link });
-          this.update(i, link, interval || res.data.interval || 5000);
+          this.update(i, link, interval || data.interval || 5000);
         }
       })
       .catch(err => {
@@ -140,11 +111,10 @@ export default {
   },
   methods: {
     update(index, link, interval) {
-      axios
-        .get(link)
-        .then(res => {
-          this.$set(this.servers[index], "data", res.data);
-          this.$nextTick(updateProgress);
+      fetch(link)
+        .then(res => res.json())
+        .then(data => {
+          this.$set(this.servers[index], "data", data);
         })
         .finally(() => {
           setTimeout(() => {
@@ -155,7 +125,13 @@ export default {
   },
   filters: {
     size(n) {
-      return formatSize(n);
+      const units = ["", "K", "M", "G", "T", "P", "E", "Z"];
+      let p = 2 ** 10;
+      for (let unit of units) {
+        if (n < p) return `${Math.round(n)}${unit}`;
+        n /= p;
+      }
+      return `${n}Y`;
     },
     round(n) {
       return Math.round(n);
