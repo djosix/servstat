@@ -16,7 +16,7 @@
               a(:data-tooltip='"[API] " + server.link' :href='server.link')
                 i.ui.external.alternate.icon
             td
-              b {{ server.data.cpu.info.brand }} ({{ server.data.cpu.count }} Cores)
+              b {{ server.data.cpu.info.brand || server.data.cpu.info.brand_raw }} ({{ server.data.cpu.count }} Cores)
               CpuUsageBars.usage-bar(:percentList='server.data.cpu.percent')
               UsageBar.usage-bar(:percent='server.data.cpu.usage')
               .little-break
