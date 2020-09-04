@@ -11,7 +11,7 @@
         tr(v-for='server in servers')
           template(v-if='server.data')
             td
-              h3 {{ server.data.host }}
+              h3 {{ server.name || server.data.host }}
               span {{ server.addr }} &nbsp;
               a(:data-tooltip='"[API] " + server.link' :href='server.link')
                 i.ui.external.alternate.icon
