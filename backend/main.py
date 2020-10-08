@@ -9,9 +9,13 @@ import os
 import platform
 
 
+CACHE_TIME = 5
+
 cpu_info_data = None
 gpu_info_data = None
 gpu_info_expires = 0
+disk_info_data = None
+disk_info_expires = 0
 
 
 def cpu_info():
@@ -29,20 +33,35 @@ def cpu_info():
 
 
 def gpu_info():
-    global gpu_info_data, gpu_info_expires
+    global gpu_info_data, gpu_info_expires, CACHE_TIME
     try:
         if gpu_info_expires < time.time():
             gpu_info_data = None
         if gpu_info_data is None:
             query_result = gpustat.new_query()
             gpu_info_data = [dict(gpu) for gpu in query_result]
-            gpu_info_expires = time.time() + 5
+            gpu_info_expires = time.time() + CACHE_TIME
     except:
         gpu_info_data = []
     return gpu_info_data
 
 
-
+def disk_info():
+    global disk_info_data, disk_info_expires, CACHE_TIME
+    if disk_info_expires < time.time():
+        disk_info_data = None
+    if disk_info_data is None:
+        disks = []
+        for part in psutil.disk_partitions():
+            if part.device.startswith('/dev/loop'):
+                continue
+            usage = psutil.disk_usage(part.mountpoint)
+            part = dict(part._asdict())
+            part['usage'] = dict(usage._asdict())
+            disks.append(part)
+        disk_info_data = disks
+        disk_info_expires = time.time() + CACHE_TIME
+    return disk_info_data
 
 app = bottle.Bottle()
 
@@ -54,19 +73,21 @@ def stat():
             'cpu': cpu_info(),
             'mem': dict(psutil.virtual_memory()._asdict()),
             'swap': dict(psutil.swap_memory()._asdict()),
-            'gpu': gpu_info()}
+            'gpu': gpu_info(),
+            'disk': disk_info()}
 
 
 
 if __name__ == '__main__':
     import argparse, sys
-    
+
     parser = argparse.ArgumentParser(sys.argv[0])
     parser.add_argument('--server', default='gunicorn')
     parser.add_argument('--host', default='0.0.0.0')
     parser.add_argument('--port', default=9989)
     parser.add_argument('--workers', default=1)
     args = parser.parse_args()
-    
+
     sys.argv = [sys.argv[0]]
     app.run(server=args.server, host=args.host, port=args.port, workers=args.workers)
+    

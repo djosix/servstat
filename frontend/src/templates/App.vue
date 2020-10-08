@@ -25,6 +25,12 @@
               .little-break
               b Swap Usage ({{ server.data.swap.used | size }} / {{ server.data.swap.total | size }}) 
               UsageBar.usage-bar(:percent='100 * server.data.swap.used / server.data.swap.total')
+              table.ui.very.compact.table
+                tbody
+                  tr(v-for='disk in server.data.disk' :class="{ negative: disk.usage.percent > 85 }")
+                    td {{ disk.device }}
+                    td {{ disk.mountpoint }}
+                    td {{ disk.usage.used | size }} / {{ disk.usage.total | size }} ({{ disk.usage.percent }}%)
             td
               div(v-if='server.data')
                 .ui.cards
@@ -100,6 +106,8 @@ export default {
         }
       })
       .catch(err => {
+        const msg = "Failed to load config.json";
+        console.log(msg + '\n', err);
         alert("Failed to load config.json");
       });
   },
@@ -135,6 +143,11 @@ export default {
     },
     round(n) {
       return Math.round(n);
+    },
+    percentColor(p) {
+      if (p < 60) return 'success';
+      else if (p < 85) return 'warning';
+      else return 'danger';
     }
   },
   components: {
