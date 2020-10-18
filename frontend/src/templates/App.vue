@@ -28,9 +28,9 @@
               table.ui.very.compact.table
                 tbody
                   tr(v-for='disk in server.data.disk' :class="{ negative: disk.usage.percent > 85 }")
-                    td {{ disk.device }}
                     td {{ disk.mountpoint }}
-                    td {{ disk.usage.used | size }} / {{ disk.usage.total | size }} ({{ disk.usage.percent }}%)
+                    td {{ disk.device }} ({{ disk.fstype }})
+                    td {{ disk.usage.used | size('T', 'G') }}B / {{ disk.usage.total | size('T', 'G') }}B ({{ Math.round(100 * disk.usage.used / disk.usage.total) }}%)
             td
               div(v-if='server.data')
                 .ui.cards
@@ -129,17 +129,35 @@ export default {
             this.update(index, link, interval);
           }, interval);
         });
-    }
+    },
   },
   filters: {
-    size(n) {
-      const units = ["", "K", "M", "G", "T", "P", "E", "Z"];
+    size(n, maxUnit, precision, pad = ' ', keep = 3) {
+      const units = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
       let p = 2 ** 10;
+      let finalUnit;
+      let afterPrec = false;
       for (let unit of units) {
-        if (n < p) return `${Math.round(n)}${unit}`;
+        if (precision === unit) {
+          n = Math.round(n);
+          afterPrec = true;
+        }
+        finalUnit = unit;
+        if (n < p) {
+          break;
+        } else if (unit === maxUnit) {
+          break;
+        } else if (unit === 'Y') {
+          break;
+        }
         n /= p;
       }
-      return `${n}Y`;
+      if (!afterPrec) {
+        n = Math.round(n);
+      }
+      let k = 10 ** keep;
+      n = Math.round(k * n) / k;
+      return `${n}${pad}${finalUnit}`;
     },
     round(n) {
       return Math.round(n);
