@@ -8,19 +8,17 @@
           th.eight.wide GPUs
       tbody
         tr(v-for='stat, hostIndex in stats')
-          td
+          td(style="vertical-align:top")
             div(v-if='stat.data')
-              h2 {{ stat.host }}
-              span &nbsp;
-              span &nbsp;
-              span &nbsp;
-              .label <br/> 
+              h2 
+                div(v-if="stat.url===undefined") {{ stat.host }}
+                a(v-if="stat.url!==undefined" v-bind:href='stat.url' target="_blank") {{ stat.host }}
+              .label 
             div(v-if='stat.data')
+              div(style="text-align:center;font-weight:bold")  {{ stat.data.cpu.info.brand || stat.data.cpu.info.brand_raw }} 
               .ui.small.reversed.progress(:x-percent='stat.data.cpu.usage')
                 .bar: .progress
-                .label {{ stat.data.cpu.info.brand }} <br/> ({{ stat.data.cpu.count }} Cores)
-              div
-                span &nbsp;
+                .label {{ stat.data.cpu.count }} Cores
               div
                 span(v-for='percent, i in stat.data.cpu.percent')
                   .ui.basic.mini.red.label(v-if='percent >= 99.95') {{ "100." }}%
@@ -36,7 +34,7 @@
 
             div(v-else)
               h2 {{ stat.host }}
-          td
+          td(style="vertical-align:top;align-items:center;")
             div(v-if='stat.data')
               .ui.cards
                 .card(v-for='gpu in stat.data.gpu')
@@ -97,7 +95,7 @@ export default {
     axios
       .get("config.json")
       .then(res => {
-        for (let [i, [host,link]] of res.data.links.entries()) {
+        for (let [i, [host,link,url]] of res.data.links.entries()) {
           let addr;
           try {
             const regex = /https?:\/\/(?<host>[a-zA-Z0-9\.]+)(?::(?<port>[0-9]+))?(?<path>\/.*)?/;
@@ -105,7 +103,8 @@ export default {
           } catch (e) {
             addr = "(unknown address)";
           }
-          this.stats.push({ addr, link });
+          //this.stats.push({ addr, link });
+          this.stats.push({ addr, link, url });
           this.$set(this.stats[i], "host", host);
           this.update(i, link, res.data.interval || 5000);
         }

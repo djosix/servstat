@@ -52,10 +52,11 @@ Edit `dist/config.json`
 
 ```json
 {
-  "interval": 5000,
-  "links": [
-    "http://backend.server.ip:port/stat"
-  ]
+    "interval": 10000,
+    "links": [
+        ["Server 01","https://api.server01.example.com:9989/api", "https://url.server01.example.com"] ,
+        ["Server 02","https://api.server02.example.com:9989/api"]
+    ]
 }
 ```
 

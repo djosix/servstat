@@ -1,6 +1,7 @@
 {
-    "interval": 5000,
+    "interval": 10000,
     "links": [
-        ["localhost","http://127.0.0.1:9989/stat"]
+        ["Server 01","https://api.server01.example.com:9989/api", "https://url.server01.example.com"] ,
+        ["Server 02","https://api.server02.example.com:9989/api"]
     ]
 }
