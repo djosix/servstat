@@ -1,5 +1,0 @@
-py-cpuinfo
-gpustat
-psutil
-tornado
-gunicorn
