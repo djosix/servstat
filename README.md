@@ -9,9 +9,9 @@ Monitoring CPU, memory, and GPU usage of multiple servers.
 Use root as example:
 
 ```shell
-cd /root
-git clone https://github.com/HuJK/servstat.git .servstat
-cd .servstat/backend
+cd /etc
+git clone https://github.com/HuJK/servstat.git servstat
+cd servstat/backend
 
 python3 -m pip install -r requirements.txt
 ```
@@ -25,17 +25,10 @@ python3 main.py --host=0.0.0.0 --port=9989
 Or manage this service with systemd, so that it will always start after rebooting:
 
 ```shell
-echo "[Unit]
-Description=ServerStat
-After=syslog.target network.target
-[Service]
-User=root
-WorkingDirectory=/root/.servstat/backend
-Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin"
-ExecStart=/usr/bin/python3 main.py --host=0.0.0.0 --port=9989
-[Install]
-WantedBy=multi-user.target" > /etc/systemd/system/serverstat.service
-systemctl enable --now serverstat
+cd /etc
+git clone https://github.com/HuJK/servstat.git servstat
+cd servstat/backend
+bash install.sh
 ```
 
 ## Building frontend
