@@ -47,15 +47,21 @@ def gpu_info():
     return gpu_info_data
 
 
-
+cache_time = 0
+cache_result = ""
 
 def stat():
-    return {'host': os.uname()[1],
+    global cache_time
+    global cache_result
+    if time.time() - cache_time > 3:
+        cache_time = time.time()
+        cache_result = json.dumps({'host': os.uname()[1],
             'time': time.time(),
             'cpu': cpu_info(),
             'mem': dict(psutil.virtual_memory()._asdict()),
             'swap': dict(psutil.swap_memory()._asdict()),
-            'gpu': gpu_info()}
+            'gpu': gpu_info()}, indent=2, ensure_ascii=False) 
+    return cache_result
 class RequestHandlerWithCROS(tornado.web.RequestHandler):
     def __init__(self, *args, **kwargs):
         super(RequestHandlerWithCROS, self).__init__(*args, **kwargs)
@@ -67,7 +73,7 @@ class RequestHandlerWithCROS(tornado.web.RequestHandler):
         self.write("OK")
 class statHandler(RequestHandlerWithCROS):
     async def get(self, *args, **kwargs):
-        self.write(json.dumps(stat(), indent=2, ensure_ascii=False))
+        self.write(stat())
 
 
 if __name__ == '__main__':
