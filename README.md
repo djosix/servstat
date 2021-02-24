@@ -34,8 +34,8 @@ bash install.sh
 ## Building frontend
 
 ```shell
-git clone https://github.com/djosix/servstat.git /tmp/servstat
-cd /tmp/servstat/frontend
+git clone https://github.com/HuJK/servstat.git servstat
+cd servstat/frontend
 
 npm install
 npm run build
