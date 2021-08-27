@@ -1,27 +1,17 @@
 {
   "name": "servstat-frontend",
-  "version": "0.0.1",
-  "description": "servstat frontend",
-  "main": "index.js",
+  "version": "0.0.2",
   "scripts": {
-    "dev": "rm -rfv dist; mkdir -pv dist; cp -fv config.json dist/; parcel src/index.pug",
-    "build": "rm -rfv dist; mkdir -pv dist; cp -fv config.json dist/; parcel build --public-url . src/index.pug"
+    "dev": "vite",
+    "build": "vite build"
   },
-  "author": "djosix",
-  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@vue/component-compiler-utils": "^3.1.1",
-    "axios": "^0.19.2",
-    "fomantic-ui-css": "^2.8.4",
-    "less": "^3.11.1",
-    "navigator": "^1.0.1",
-    "parcel": "^1.12.4",
-    "pug": "^2.0.4",
-    "typescript": "^3.9.2",
-    "vue": "^2.6.11",
-    "vue-hot-reload-api": "^2.3.4",
-    "vue-template-compiler": "^2.6.11",
-    "xmlhttprequest": "^1.8.0"
+    "@vue/compiler-sfc": "^3.0.4",
+    "fomantic-ui-css": "^2.8.8",
+    "less": "^4.1.1",
+    "pug": "^3.0.2",
+    "vite": "^1.0.0-rc.13",
+    "vue": "^3.0.4"
   }
 }

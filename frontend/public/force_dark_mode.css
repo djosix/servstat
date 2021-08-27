@@ -1,0 +1,36 @@
+:root {
+    --font-color: #D6D6D6;
+    --font-color-inverted: #131313;
+    --background-color: #272727;
+    --border-color: #888;
+}
+
+body {
+    background-color: var(--background-color);
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--font-color) !important;
+}
+
+table, thead, tbody, tr, th, td, .card, .header {
+    color: var(--font-color) !important;
+    background-color: var(--background-color)  !important;
+    border-color: var(--border-color) !important;
+}
+
+b,span,pre,.extra.conent i {
+    color: var(--font-color) !important;
+}
+
+b.x-percent {
+    color: var(--font-color-inverted) !important;
+}
+
+.x-container {
+    background-color: #383838 !important;
+}
+
+.extra.content {
+    border-top-color: var(--border-color) !important;
+}

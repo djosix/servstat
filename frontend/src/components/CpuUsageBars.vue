@@ -1,6 +1,6 @@
 <template lang="pug">
-  .x-container
-    .x-bar(v-for='percent in percentList' v-bind:style='{ "background-color": toColor(percent), height: toWidth(percent) }')
+.x-container
+  .x-bar(v-for='percent in percentList' v-bind:style='{ "background-color": toColor(percent), height: toWidth(percent) }')
 </template>
 
 <style scoped>
@@ -10,12 +10,10 @@
   border: 0px;
   border-radius: 3px;
   background-color: rgb(236, 235, 235);
-
   display: flex;
   flex: 0 0 1px;
   align-items:flex-end;
 }
-
 .x-bar {
   flex-direction: column;
   flex-basis: 0;
@@ -25,12 +23,9 @@
   transition-property: height;
   transition-duration: 0.5s;
   transition-timing-function: linear;
-
   margin: 0px;
   padding: 0px;
   border: 0px;
-
-
   border-radius: inherit;
 }
 </style>

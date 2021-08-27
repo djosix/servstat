@@ -6,7 +6,7 @@ Monitoring CPU, memory, and GPU usage of multiple servers.
 
 ## Running backend
 
-Use root as example:
+Using root user.
 
 ```shell
 cd /root
@@ -16,20 +16,20 @@ cd .servstat/backend
 python3 -m pip install -r requirements.txt
 ```
 
-Simply run the API server:
+Directly run the API server:
 
 ```shell
 python3 main.py --host=0.0.0.0 --port=9989
 ```
 
-Or manage this service with supervisor, so that it will always start after rebooting:
+Or manage this service with supervisor, so it always starts after system reboot:
 
 ```shell
 # Install supervisor
-apt install supervisor # using your package manager
+apt install supervisor
 
 cp servstat.conf /etc/supervisor/conf.d/servstat.conf
-vim /etc/supervisor/conf.d/servstat.conf # customize your service
+vim /etc/supervisor/conf.d/servstat.conf # you can customize this
 
 systemctl reload supervisor
 supervisorctl start servstat
@@ -37,33 +37,27 @@ supervisorctl start servstat
 
 ## Building frontend
 
+Tested on Node.js v14.16.0 and Ubuntu 20.04.
+
 ```shell
-git clone https://github.com/djosix/servstat.git /tmp/servstat
-cd /tmp/servstat/frontend
+git clone https://github.com/djosix/servstat.git
+cd servstat/frontend
 
 npm install
+
+# Add your servers
+vim public/config.json
+
+# Build static site
 npm run build
-```
 
-Edit `dist/config.json`
-
-```json
-{
-  "title": "Any Optional Title",
-  "interval": 5000,
-  "servers": [
-    "http://backend.server.ip:port/stat",
-    {
-      "name": "Any Optional Server Name",
-      "link": "http://another.backend.server.ip:port/stat",
-    }
-  ]
-}
+# Or build with another base path
+npx vite build --base=/base/path/
 ```
 
 Serve the `dist/` folder using a web server, for example:
 
 ```shell
-# Copy files to document root of your web server
+# Copy files to document root
 cp -r dist/* /var/www/html/
 ```

@@ -1,7 +1,7 @@
 <template lang="pug">
-  .x-container
-    .x-bar(v-bind:style='{ width: toWidth(percent), "background-color": toColor(percent) }')
-      b.x-percent {{ Math.round(percent) }}%
+.x-container
+  .x-bar(v-bind:style='{ width: toWidth(percent), "background-color": toColor(percent) }')
+    b.x-percent {{ Math.round(percent) }}%
 </template>
 
 <style scoped>
@@ -12,7 +12,6 @@
   border-radius: 3px;
   background-color: rgb(236, 235, 235);
 }
-
 .x-bar {
   transition-property: width;
   transition-duration: 0.7s;
@@ -27,7 +26,6 @@
   border-radius: inherit;
   vertical-align: center;
 }
-
 .x-percent {
   margin: 0px;
   padding: 0px;

@@ -2,8 +2,7 @@
 .vscode
 *.pyc
 .*.swp
-
-frontend/node_modules
-frontend/package-lock.json
-frontend/dist
-frontend/.cache
+node_modules
+dist
+dist-ssr
+*.local
